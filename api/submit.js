@@ -1,35 +1,23 @@
-import { createClient } from '@supabase/supabase-js';
+// api/submit.js
+const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-export const config = {
-  runtime: 'edge',
-};
-
-export default async (req) => {
+module.exports = async (req, res) => {
   if (req.method !== 'POST') {
-    return new Response('Method Not Allowed', { status: 405 });
+    return res.status(405).send('Method Not Allowed');
   }
 
-  const body = await req.json();
-  const { name, ...slots } = body;
+  const { name, ...slots } = req.body;
 
-  // Basic validation
-  if (!name || typeof name !== 'string') {
-    return new Response('Invalid name', { status: 400 });
-  }
+  if (!name) return res.status(400).send('Missing name');
 
-  const { error } = await supabase
-    .from('availability')
-    .insert([{ name, ...slots }]);
+  const { error } = await supabase.from('availability').insert([{ name, ...slots }]);
 
-  if (error) {
-    console.error(error);
-    return new Response('Database error', { status: 500 });
-  }
+  if (error) return res.status(500).send('Insert failed');
 
-  return new Response('Success', { status: 200 });
+  return res.status(200).send('Success');
 };
