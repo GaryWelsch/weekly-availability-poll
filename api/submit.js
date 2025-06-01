@@ -1,5 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
 
+// ✅ Server-side secure keys (from Vercel Environment Variables)
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -7,13 +8,13 @@ const supabase = createClient(
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
-    return res.status(405).send('Method Not Allowed');
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
   const { name, ...slots } = req.body;
 
-  if (!name || typeof name !== 'string') {
-    return res.status(400).send('Missing or invalid name');
+  if (!name) {
+    return res.status(400).json({ error: 'Missing name' });
   }
 
   try {
@@ -22,13 +23,13 @@ module.exports = async (req, res) => {
       .insert([{ name, ...slots }]);
 
     if (error) {
-      console.error('Supabase insert error:', error);
-      return res.status(500).send('Error inserting data');
+      console.error('❌ Supabase insert error:', error);
+      return res.status(500).json({ error: 'Supabase insert failed' });
     }
 
-    return res.status(200).send('Success');
+    return res.status(200).json({ message: 'Success' });
   } catch (err) {
-    console.error('Unexpected error:', err);
-    return res.status(500).send('Unexpected error');
+    console.error('❌ Unexpected error:', err);
+    return res.status(500).json({ error: 'Unexpected error' });
   }
 };
