@@ -163,17 +163,28 @@
     }
 
     slots.forEach((key, i) => {
-      const label = document.createElement('label');
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.name = key;
-      checkbox.value = 'true';
-      label.appendChild(checkbox);
-      const baseLabel = labels[key];
-      const offset = i < 5 ? i : (i < 7 ? 5 : 6);
-      label.append(" " + baseLabel + (i < 5 ? getDateLabel(offset) : ''));
-      checkboxesDiv.appendChild(label);
-    });
+  const label = document.createElement('label');
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.name = key;
+  checkbox.value = 'true';
+  label.appendChild(checkbox);
+
+  const baseLabel = labels[key];
+
+  // Determine correct offset for date label
+  let offset;
+  if (i < 5) {
+    offset = i; // Monday–Friday
+  } else if (key.includes('sat')) {
+    offset = 5; // Saturday
+  } else if (key.includes('sun')) {
+    offset = 6; // Sunday
+  }
+
+  label.append(" " + baseLabel + ` ${getDateLabel(offset)}`);
+  checkboxesDiv.appendChild(label);
+});
 
     async function loadResponses() {
       try {
