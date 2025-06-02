@@ -81,10 +81,16 @@
     button:hover {
       background: #0b73d9;
     }
+    /* Make the table responsive */
+    .table-container {
+      overflow-x: auto;
+      margin-top: 2rem;
+    }
+
     table {
       width: 100%;
+      min-width: 600px; /* Ensure the table doesn't shrink too much */
       border-collapse: collapse;
-      margin-top: 2rem;
       font-size: 0.9rem;
       background-color: #f9f9f9;
     }
@@ -147,7 +153,7 @@
     </form>
 
     <h2>📊 Who's Available</h2>
-    <div id="responses">Loading responses...</div>
+    <div id="responses" class="table-container">Loading responses...</div>
   </div>
 
   <script>
@@ -189,6 +195,14 @@
         document.getElementById('error-msg').innerText = 'Incorrect password.';
       }
     }
+
+    // Add event listener to handle Enter key for password input
+    document.getElementById('password-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        checkPassword();
+      }
+    });
 
     const form = document.getElementById('availability-form');
     const checkboxesDiv = document.getElementById('day-checkboxes');
