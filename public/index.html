@@ -12,20 +12,36 @@
       background-color: #f5f7fa;
       color: #333;
     }
-    header {
+    #login {
+      text-align: center;
+      margin-top: 3rem;
       background-image: url('https://static.independent.co.uk/2024/07/05/11/what-is-Padel-indybest.png');
       background-size: cover;
       background-position: center;
-      height: 300px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    header h1 {
+      padding: 3rem 1rem;
+      border-radius: 10px;
       color: white;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 3rem;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+    }
+    #login h2 {
+      margin-bottom: 1rem;
+    }
+    #login input, #login button {
+      background-color: rgba(255, 255, 255, 0.8);
+      color: #333;
+    }
+    #login input {
+      border: 1px solid #ccc;
+    }
+    #login button {
+      background: #1E90FF;
+      color: white;
+    }
+    #login button:hover {
+      background: #0b73d9;
+    }
+    header {
+      display: none;
     }
     main {
       padding: 2rem;
@@ -98,9 +114,8 @@
     .book-links a:hover {
       text-decoration: underline;
     }
-    #login {
-      text-align: center;
-      margin-top: 3rem;
+    #main-content {
+      display: none;
     }
     #day-checkboxes > label {
       margin-bottom: 0.3rem;
@@ -119,7 +134,7 @@
     <p id="error-msg" class="error"></p>
   </div>
 
-  <div id="main-content" style="display:none;">
+  <div id="main-content">
     <h1>🗓 Weekly Availability</h1>
     <form id="availability-form">
       <label for="name">Your Name:</label>
@@ -180,8 +195,16 @@
     const responsesDiv = document.getElementById('responses');
     const formError = document.getElementById('form-error');
 
-    const today = new Date();
-    const weekStart = new Date(today.setDate(today.getDate() - today.getDay() + 1));
+    // Calculate the start of the week (Monday)
+const today = new Date();
+let weekStart = new Date(today.setDate(today.getDate() - today.getDay() + 1)); // Default to Monday
+weekStart.setHours(0, 0, 0, 0); // Start of the day
+
+// Calculate the start and end dates for filtering responses
+let filterStart = new Date(today.setDate(today.getDate() - today.getDay() - 1)); // Previous Saturday
+filterStart.setHours(0, 0, 0, 0); // Start of the day
+const filterEnd = new Date(); // Today
+filterEnd.setHours(23, 59, 59, 999); // End of the day
 
     function getDateLabel(offset) {
       const d = new Date(weekStart);
@@ -215,7 +238,7 @@
 
     async function loadResponses() {
       try {
-        const res = await fetch(API_URL, {
+        const res = await fetch(`${API_URL}&created_at=gte.${filterStart.toISOString()}&created_at=lte.${filterEnd.toISOString()}`, {
           headers: {
             apikey: API_KEY,
             Authorization: `Bearer ${API_KEY}`
