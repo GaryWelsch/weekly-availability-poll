@@ -69,13 +69,34 @@
       width: 100%;
       border-collapse: collapse;
       margin-top: 2rem;
+      font-size: 0.9rem;
+      background-color: #f9f9f9;
     }
     table, th, td {
-      border: 1px solid #ccc;
+      border: 1px solid #ddd;
     }
-    th, td {
+    th {
+      background-color: #1E90FF;
+      color: white;
+      padding: 12px;
+    }
+    td {
       padding: 10px;
-      text-align: center;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    tr:hover {
+      background-color: #e6f7ff;
+    }
+    .book-links a {
+      display: block;
+      margin: 2px 0;
+      color: #1E90FF;
+      text-decoration: none;
+    }
+    .book-links a:hover {
+      text-decoration: underline;
     }
     #login {
       text-align: center;
@@ -137,6 +158,12 @@
       sunday_evening: "Sun Eve' Post 12:00"
     };
 
+    const bookingLinks = [
+      'https://playtomic.io/tenant/a95b1ddd-ea5a-4516-86a8-cf3825ebe760', // Bermondsey
+      'https://playtomic.io/tenant/ee371813-8620-437e-9061-83e373090d60', // Padium Canary Wharf
+      'https://playtomic.io/tenant/9e79c4f9-3c2e-4fb8-a01f-ae514dc7e351', // O2 Club
+      'https://playtomic.io/tenant/1fa24d4d-6252-428d-8525-70905861257d'  // Rocket Padel
+    ];
     function checkPassword() {
       const pw = document.getElementById('password-input').value;
       if (pw === PASSWORD) {
@@ -199,14 +226,29 @@
           responsesDiv.innerHTML = 'No responses yet.';
           return;
         }
+
         let html = '<table><tr><th>Name</th>';
         slots.forEach(slot => html += `<th>${labels[slot]}</th>`);
         html += '</tr>';
+
         data.forEach(entry => {
           html += `<tr><td>${entry.name}</td>`;
           slots.forEach(slot => html += `<td>${entry[slot] ? '✅' : ''}</td>`);
           html += '</tr>';
         });
+
+        // Add booking links row
+        html += '<tr><td><strong>📅 Book a Court</strong></td>';
+        slots.forEach(() => {
+          html += `<td class="book-links">
+            <a href="${bookingLinks[0]}" target="_blank">Bermondsey</a><br>
+            <a href="${bookingLinks[1]}" target="_blank">Padium</a><br>
+            <a href="${bookingLinks[2]}" target="_blank">O2 Club</a><br>
+            <a href="${bookingLinks[3]}" target="_blank">Rocket</a>
+          </td>`;
+        });
+        html += '</tr>';
+
         html += '</table>';
         responsesDiv.innerHTML = html;
       } catch (err) {
@@ -214,7 +256,6 @@
         console.error(err);
       }
     }
-
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       formError.innerText = '';
