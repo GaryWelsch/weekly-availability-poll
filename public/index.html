@@ -29,7 +29,7 @@
     }
     main {
       padding: 2rem;
-      max-width: 900px;
+      max-width: 800px;
       margin: auto;
       background-color: white;
       border-radius: 10px;
@@ -45,10 +45,8 @@
     }
     input[type="text"], input[type="password"] {
       width: 100%;
-      max-width: 400px;
       padding: 0.5rem;
-      margin: 0.5rem auto;
-      display: block;
+      margin-top: 0.5rem;
       border: 1px solid #ccc;
       border-radius: 5px;
     }
@@ -63,9 +61,6 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
     }
     button:hover {
       background: #0b73d9;
@@ -81,20 +76,6 @@
     th, td {
       padding: 10px;
       text-align: center;
-      vertical-align: middle;
-    }
-    .book-links {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .book-links a {
-      font-size: 0.9em;
-      color: #1E90FF;
-      text-decoration: none;
-    }
-    .book-links a:hover {
-      text-decoration: underline;
     }
     #login {
       text-align: center;
@@ -106,83 +87,60 @@
     }
     .error {
       color: red;
-      text-align: center;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Weekly Padel Availability</h1>
-  </header>
-  <main>
-    <div id="login">
-      <h2>🔐 Enter Password to Access</h2>
-      <input type="password" id="password-input" placeholder="Enter password" />
-      <button onclick="checkPassword()">Enter</button>
-      <p id="error-msg" class="error"></p>
-    </div>
+  <div id="login">
+    <h2>🔐 Enter Password to Access</h2>
+    <input type="password" id="password-input" placeholder="Enter password" />
+    <button onclick="checkPassword()">Enter</button>
+    <p id="error-msg" class="error"></p>
+  </div>
 
-    <div id="main-content" style="display:none;">
-      <h2>🗓 Select Your Availability</h2>
-      <form id="availability-form">
-        <label for="name">Your Name:</label>
-        <input type="text" id="name" name="name" required />
-        <div id="day-checkboxes">
-          <label><input type="checkbox" name="monday" /> Monday</label>
-          <label><input type="checkbox" name="tuesday" /> Tuesday</label>
-          <label><input type="checkbox" name="wednesday" /> Wednesday</label>
-          <label><input type="checkbox" name="thursday" /> Thursday</label>
-          <label><input type="checkbox" name="friday" /> Friday</label>
-          <label><input type="checkbox" name="saturday_morning" /> Saturday Morning</label>
-          <label><input type="checkbox" name="saturday_evening" /> Saturday Evening</label>
-          <label><input type="checkbox" name="sunday_morning" /> Sunday Morning</label>
-          <label><input type="checkbox" name="sunday_evening" /> Sunday Evening</label>
-        </div>
-        <button type="submit" id="submit-btn">Submit</button>
-        <p id="form-error" class="error"></p>
-      </form>
+  <div id="main-content" style="display:none;">
+    <h1>🗓 Weekly Availability</h1>
+    <form id="availability-form">
+      <label for="name">Your Name:</label>
+      <input type="text" id="name" name="name" required />
 
-      <h2>📊 Who's Available</h2>
-      <div id="responses">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Monday</th>
-              <th>Tuesday</th>
-              <th>Wednesday</th>
-              <th>Thursday</th>
-              <th>Friday</th>
-              <th>Saturday Morning</th>
-              <th>Saturday Evening</th>
-              <th>Sunday Morning</th>
-              <th>Sunday Evening</th>
-            </tr>
-          </thead>
-          <tbody id="responses-body">
-            <tr>
-              <td><strong>📅 Book a Court</strong></td>
-              ${["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday Morning","Saturday Evening","Sunday Morning","Sunday Evening"].map(() => `
-              <td class="book-links">
-                <a href="https://playtomic.io/tenant/a95b1ddd-ea5a-4516-86a8-cf3825ebe760" target="_blank">Bermondsey</a>
-                <a href="https://playtomic.io/tenant/ee371813-8620-437e-9061-83e373090d60" target="_blank">Padium</a>
-                <a href="https://playtomic.io/tenant/9e79c4f9-3c2e-4fb8-a01f-ae514dc7e351" target="_blank">O2 Club</a>
-                <a href="https://playtomic.io/tenant/1fa24d4d-6252-428d-8525-70905861257d" target="_blank">Rocket</a>
-              </td>`).join("")}
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </main>
+      <div id="day-checkboxes"></div>
+
+      <button type="submit" id="submit-btn">Submit</button>
+      <p id="form-error" class="error"></p>
+    </form>
+
+    <h2>📊 Who's Available</h2>
+    <div id="responses">Loading responses...</div>
+  </div>
 
   <script>
-    const API_URL = 'https://asogazdrmvpxtkmomheg.supabase.co/rest/v1/availability?select=*';
-    const API_KEY = 'eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzb2dhemRybXZweHRrbW9taGVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4MTQ3MjYsImV4cCI6MjA2NDM5MDcyNn0';
+    const PASSWORD = 'SSpadel123';
+    const SUPABASE_URL = 'https://asogazdrmvpxtkmomheg.supabase.co';
+    const API_URL = SUPABASE_URL + '/rest/v1/availability?select=*';
+    const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzb2dhemRybXZweHRrbW9taGVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4MTQ3MjYsImV4cCI6MjA2NDM5MDcyNn0._q8qujS_vCYbkxVxZ3roA1EMlWTfN8xvwt-7TM6b94A';
+
+    const slots = [
+      'monday', 'tuesday', 'wednesday', 'thursday', 'friday',
+      'saturday_morning', 'saturday_evening',
+      'sunday_morning', 'sunday_evening'
+    ];
+
+    const labels = {
+      monday: "Monday",
+      tuesday: "Tuesday",
+      wednesday: "Wednesday",
+      thursday: "Thursday",
+      friday: "Friday",
+      saturday_morning: "Saturday Morn' Pre 12:00",
+      saturday_evening: "Saturday Eve' Post 12:00",
+      sunday_morning: "Sunday Morn' Pre 12:00",
+      sunday_evening: "Sunday Eve' Post 12:00"
+    };
 
     function checkPassword() {
       const pw = document.getElementById('password-input').value;
-      if (pw === 'padel123') {
+      if (pw === PASSWORD) {
         document.getElementById('login').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
         loadResponses();
@@ -191,41 +149,87 @@
       }
     }
 
+    const form = document.getElementById('availability-form');
+    const checkboxesDiv = document.getElementById('day-checkboxes');
+    const responsesDiv = document.getElementById('responses');
+    const formError = document.getElementById('form-error');
+
+    const today = new Date();
+    const weekStart = new Date(today.setDate(today.getDate() - today.getDay() + 1));
+
+    function getDateLabel(offset) {
+      const d = new Date(weekStart);
+      d.setDate(d.getDate() + offset);
+      return ` (${d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })})`;
+    }
+
+    slots.forEach((key, i) => {
+      const label = document.createElement('label');
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.name = key;
+      checkbox.value = 'true';
+      label.appendChild(checkbox);
+      const baseLabel = labels[key];
+      const offset = i < 5 ? i : (i < 7 ? 5 : 6);
+      label.append(" " + baseLabel + (i < 5 ? getDateLabel(offset) : ''));
+      checkboxesDiv.appendChild(label);
+    });
+
     async function loadResponses() {
       try {
         const res = await fetch(API_URL, {
-          headers: { 'apikey': API_KEY }
+          headers: {
+            apikey: API_KEY,
+            Authorization: `Bearer ${API_KEY}`
+          }
         });
         const data = await res.json();
-
-        const tbody = document.getElementById('responses-body');
-        const existing = Array.from(tbody.children).slice(1); // skip first row (book links)
-        existing.forEach(el => el.remove());
-
+        if (!data.length) {
+          responsesDiv.innerHTML = 'No responses yet.';
+          return;
+        }
+        let html = '<table><tr><th>Name</th>';
+        slots.forEach(slot => html += `<th>${labels[slot]}</th>`);
+        html += '</tr>';
         data.forEach(entry => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${entry.name}</td>` +
-            ['monday','tuesday','wednesday','thursday','friday','saturday_morning','saturday_evening','sunday_morning','sunday_evening']
-            .map(slot => `<td>${entry[slot] ? '✅' : ''}</td>`).join('');
-          tbody.appendChild(tr);
+          html += `<tr><td>${entry.name}</td>`;
+          slots.forEach(slot => html += `<td>${entry[slot] ? '✅' : ''}</td>`);
+          html += '</tr>';
         });
+        html += '</table>';
+        responsesDiv.innerHTML = html;
       } catch (err) {
-        console.error("Error loading responses:", err);
+        responsesDiv.innerHTML = 'Error loading responses.';
+        console.error(err);
       }
     }
 
-    document.getElementById('availability-form').addEventListener('submit', async e => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       formError.innerText = '';
 
       const name = document.getElementById('name').value.trim();
-      if (!name) return;
+      if (!name) {
+        formError.innerText = 'Name is required.';
+        return;
+      }
 
-      const formData = new FormData(e.target);
+      const existing = await fetch(API_URL, {
+        headers: {
+          apikey: API_KEY,
+          Authorization: `Bearer ${API_KEY}`
+        }
+      }).then(res => res.json());
+
+      if (existing.some(entry => entry.name.toLowerCase() === name.toLowerCase())) {
+        formError.innerText = 'You have already submitted.';
+        return;
+      }
+
+      const formData = new FormData(form);
       const payload = { name };
-      formData.forEach((value, key) => {
-        if (key !== 'name') payload[key] = true;
-      });
+      slots.forEach(slot => payload[slot] = formData.get(slot) === 'true');
 
       const res = await fetch('/api/submit', {
         method: 'POST',
@@ -234,11 +238,11 @@
       });
 
       if (res.ok) {
-        alert('✅ Submitted!');
-        e.target.reset();
+        alert('✅ Submitted successfully!');
+        form.reset();
         loadResponses();
       } else {
-        alert('❌ Error submitting.');
+        alert('❌ Submission failed.');
       }
     });
   </script>
