@@ -254,21 +254,31 @@ filterEnd.setHours(23, 59, 59, 999); // End of the day
         slots.forEach(slot => html += `<th>${labels[slot]}</th>`);
         html += '</tr>';
 
+        const slotCounts = {}; // Track the count of confirmed members for each slot
+        slots.forEach(slot => slotCounts[slot] = 0);
+
         data.forEach(entry => {
           html += `<tr><td>${entry.name}</td>`;
-          slots.forEach(slot => html += `<td>${entry[slot] ? '✅' : ''}</td>`);
+          slots.forEach(slot => {
+            if (entry[slot]) slotCounts[slot]++;
+            html += `<td>${entry[slot] ? '✅' : ''}</td>`;
+          });
           html += '</tr>';
         });
 
         // Add booking links row
         html += '<tr><td><strong>📅 Book a Court</strong></td>';
-        slots.forEach(() => {
-          html += `<td class="book-links">
-            <a href="${bookingLinks[0]}" target="_blank">Bermondsey</a><br>
-            <a href="${bookingLinks[1]}" target="_blank">Padium</a><br>
-            <a href="${bookingLinks[2]}" target="_blank">O2 Club</a><br>
-            <a href="${bookingLinks[3]}" target="_blank">Rocket</a>
-          </td>`;
+        slots.forEach(slot => {
+          if (slotCounts[slot] >= 4) {
+            html += `<td class="book-links">
+              <a href="${bookingLinks[0]}" target="_blank">Bermondsey</a><br>
+              <a href="${bookingLinks[1]}" target="_blank">Padium</a><br>
+              <a href="${bookingLinks[2]}" target="_blank">O2 Club</a><br>
+              <a href="${bookingLinks[3]}" target="_blank">Rocket</a>
+            </td>`;
+          } else {
+            html += '<td></td>'; // Leave empty if fewer than 4 members are available
+          }
         });
         html += '</tr>';
 
