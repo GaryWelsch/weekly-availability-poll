@@ -59,12 +59,14 @@
       margin-top: 1rem;
       font-weight: bold;
     }
-    input[type="text"], input[type="password"] {
+    input[type="text"], input[type="password"], select {
       width: 80%;
       padding: 0.5rem;
       margin-top: 0.5rem;
       border: 1px solid #ccc;
       border-radius: 5px;
+      background-color: white;
+      color: #333;
     }
     input[type="checkbox"] {
       margin-right: 0.5rem;
@@ -144,7 +146,22 @@
     <h1>🗓 Weekly Availability</h1>
     <form id="availability-form">
       <label for="name">Your Name:</label>
-      <input type="text" id="name" name="name" required />
+      <select id="name" name="name" required>
+        <option value="" disabled selected>Select your name</option>
+        <option value="Gary">Gary</option>
+        <option value="Dom">Dom</option>
+        <option value="Kristian">Kristian</option>
+        <option value="Kofi">Kofi</option>
+        <option value="Albert">Albert</option>
+        <option value="Alex">Alex</option>
+        <option value="Dami">Dami</option>
+        <option value="Eman">Eman</option>
+        <option value="Sam">Sam</option>
+        <option value="Kadeem">Kadeem</option>
+        <option value="Peter">Peter</option>
+        <option value="CB">CB</option>
+        <!-- Add more names as needed -->
+      </select>
 
       <div id="day-checkboxes"></div>
 
