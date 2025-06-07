@@ -337,7 +337,8 @@ filterEnd.setHours(23, 59, 59, 999); // End of the day
         return;
       }
 
-      const existing = await fetch(API_URL, {
+      // Fetch existing responses within the current week range
+      const existing = await fetch(`${API_URL}&created_at=gte.${filterStart.toISOString()}&created_at=lte.${filterEnd.toISOString()}`, {
         headers: {
           apikey: API_KEY,
           Authorization: `Bearer ${API_KEY}`
@@ -345,7 +346,7 @@ filterEnd.setHours(23, 59, 59, 999); // End of the day
       }).then(res => res.json());
 
       if (existing.some(entry => entry.name.toLowerCase() === name.toLowerCase())) {
-        formError.innerText = 'You have already submitted.';
+        formError.innerText = 'You have already submitted for this week.';
         return;
       }
 
