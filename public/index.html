@@ -228,16 +228,17 @@
 
     // Calculate the start of the week (Monday)
 const today = new Date();
-let weekStart = new Date(today.setDate(today.getDate() - today.getDay() + 1)); // Default to Monday
+let weekStart = new Date(today);
+weekStart.setDate(today.getDate() - today.getDay() + 1); // Default to Monday
 weekStart.setHours(0, 0, 0, 0); // Start of the day
 
-// Check if today is Saturday
+// Adjust weekStart if today is Saturday
 if (today.getDay() === 6) {
   weekStart.setDate(weekStart.getDate() + 7); // Move to the next Monday
 }
 
 // Calculate the start and end dates for filtering responses
-let filterStart = new Date(today); // Current Saturday
+let filterStart = new Date(today);
 filterStart.setHours(0, 0, 0, 0); // Start of the day
 const filterEnd = new Date(filterStart);
 filterEnd.setDate(filterEnd.getDate() + 7); // Next Saturday
