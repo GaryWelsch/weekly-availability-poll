@@ -239,6 +239,7 @@ if (today.getDay() === 6) {
 
 // Calculate the start and end dates for filtering responses
 let filterStart = new Date(today);
+filterStart.setDate(filterStart.getDate() - ((filterStart.getDay() + 1) % 7)); // Set to the latest Saturday
 filterStart.setHours(0, 0, 0, 0); // Start of the day
 const filterEnd = new Date(filterStart);
 filterEnd.setDate(filterEnd.getDate() + 7); // Next Saturday
