@@ -204,11 +204,14 @@
     ];
     function checkPassword() {
       const pw = document.getElementById('password-input').value;
+      console.log(`Password entered: ${pw}`);
       if (pw === PASSWORD) {
+        console.log('Password correct. Showing main content.');
         document.getElementById('login').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
         loadResponses();
       } else {
+        console.log('Password incorrect.');
         document.getElementById('error-msg').innerText = 'Incorrect password.';
       }
     }
@@ -277,6 +280,7 @@ filterEnd.setHours(23, 59, 59, 999); // End of the day
 
     async function loadResponses() {
       try {
+        console.log(`Fetching responses from ${filterStart.toISOString()} to ${filterEnd.toISOString()}`);
         const res = await fetch(`${API_URL}&created_at=gte.${filterStart.toISOString()}&created_at=lte.${filterEnd.toISOString()}`, {
           headers: {
             apikey: API_KEY,
@@ -284,8 +288,10 @@ filterEnd.setHours(23, 59, 59, 999); // End of the day
           }
         });
         const data = await res.json();
+        console.log('Responses fetched:', data);
         if (!data.length) {
           responsesDiv.innerHTML = 'No responses yet.';
+          console.log('No responses found.');
           return;
         }
 
@@ -325,48 +331,53 @@ filterEnd.setHours(23, 59, 59, 999); // End of the day
         responsesDiv.innerHTML = html;
       } catch (err) {
         responsesDiv.innerHTML = 'Error loading responses.';
-        console.error(err);
+        console.error('Error fetching responses:', err);
       }
     }
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       formError.innerText = '';
-
       const name = document.getElementById('name').value.trim();
+      console.log(`Form submitted by: ${name}`);
       if (!name) {
         formError.innerText = 'Name is required.';
+        console.log('Form submission failed: Name is required.');
         return;
       }
-
-      // Fetch existing responses within the current week range
-      const existing = await fetch(`${API_URL}&created_at=gte.${filterStart.toISOString()}&created_at=lte.${filterEnd.toISOString()}`, {
-        headers: {
-          apikey: API_KEY,
-          Authorization: `Bearer ${API_KEY}`
+      try {
+        console.log(`Checking existing submissions for ${name} from ${filterStart.toISOString()} to ${filterEnd.toISOString()}`);
+        const existing = await fetch(`${API_URL}&created_at=gte.${filterStart.toISOString()}&created_at=lte.${filterEnd.toISOString()}`, {
+          headers: {
+            apikey: API_KEY,
+            Authorization: `Bearer ${API_KEY}`
+          }
+        }).then(res => res.json());
+        console.log('Existing submissions:', existing);
+        if (existing.some(entry => entry.name.toLowerCase() === name.toLowerCase())) {
+          formError.innerText = 'You have already submitted for this week.';
+          console.log(`Submission rejected: ${name} has already submitted for this week.`);
+          return;
         }
-      }).then(res => res.json());
-
-      if (existing.some(entry => entry.name.toLowerCase() === name.toLowerCase())) {
-        formError.innerText = 'You have already submitted for this week.';
-        return;
-      }
-
-      const formData = new FormData(form);
-      const payload = { name };
-      slots.forEach(slot => payload[slot] = formData.get(slot) === 'true');
-
-      const res = await fetch('/api/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (res.ok) {
-        alert('✅ Submitted successfully!');
-        form.reset();
-        loadResponses();
-      } else {
-        alert('❌ Submission failed.');
+        const formData = new FormData(form);
+        const payload = { name };
+        slots.forEach(slot => payload[slot] = formData.get(slot) === 'true');
+        console.log('Submitting payload:', payload);
+        const res = await fetch('/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          console.log('Submission successful.');
+          alert('✅ Submitted successfully!');
+          form.reset();
+          loadResponses();
+        } else {
+          console.log('Submission failed.');
+          alert('❌ Submission failed.');
+        }
+      } catch (err) {
+        console.error('Error during form submission:', err);
       }
     });
   </script>
