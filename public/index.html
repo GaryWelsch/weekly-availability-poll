@@ -353,18 +353,25 @@ filterEnd.setHours(23, 59, 59, 999); // End of the day
           }
         }).then(res => res.json());
         console.log('Existing submissions:', existing);
-        if (existing.some(entry => entry.name.toLowerCase() === name.toLowerCase())) {
-          formError.innerText = 'You have already submitted for this week.';
-          console.log(`Submission rejected: ${name} has already submitted for this week.`);
-          return;
+        const existingEntry = existing.find(entry => entry.name.toLowerCase() === name.toLowerCase());
+        if (existingEntry) {
+          if (!confirm('You have already submitted for this week. Do you want to update your submission?')) {
+            console.log(`Submission canceled: ${name} chose not to update.`);
+            return;
+          }
+          console.log(`Updating submission for ${name}.`);
         }
         const formData = new FormData(form);
         const payload = { name };
         slots.forEach(slot => payload[slot] = formData.get(slot) === 'true');
         console.log('Submitting payload:', payload);
-        const res = await fetch('/api/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const res = await fetch(existingEntry ? `${SUPABASE_URL}/rest/v1/availability?id=eq.${existingEntry.id}` : `${SUPABASE_URL}/rest/v1/availability`, {
+          method: existingEntry ? 'PATCH' : 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            apikey: API_KEY,
+            Authorization: `Bearer ${API_KEY}`
+          },
           body: JSON.stringify(payload)
         });
         if (res.ok) {
