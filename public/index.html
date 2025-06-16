@@ -366,14 +366,16 @@ filterEnd.setHours(23, 59, 59, 999); // End of the day
         slots.forEach(slot => payload[slot] = formData.get(slot) === 'true');
         console.log('Submitting payload:', payload);
         const res = await fetch(existingEntry ? `${SUPABASE_URL}/rest/v1/availability?id=eq.${existingEntry.id}` : `${SUPABASE_URL}/rest/v1/availability`, {
-          method: existingEntry ? 'PATCH' : 'POST',
+          method: 'POST', // Use POST for upsert
           headers: { 
             'Content-Type': 'application/json',
             apikey: API_KEY,
             Authorization: `Bearer ${API_KEY}`,
-            Prefer: 'return=representation' // Ensure the updated record is returned
+            Prefer: 'resolution=merge-duplicates,return=representation', // Enable upsert and return updated record
+            name: name, // Include name in headers
+            id: existingEntry?.id // Include id in headers
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({ ...payload, id: existingEntry?.id }) // Include the ID for updating
         });
         if (res.ok) {
           console.log('Submission successful.');
