@@ -370,7 +370,8 @@ filterEnd.setHours(23, 59, 59, 999); // End of the day
           headers: { 
             'Content-Type': 'application/json',
             apikey: API_KEY,
-            Authorization: `Bearer ${API_KEY}`
+            Authorization: `Bearer ${API_KEY}`,
+            Prefer: 'return=representation' // Ensure the updated record is returned
           },
           body: JSON.stringify(payload)
         });
