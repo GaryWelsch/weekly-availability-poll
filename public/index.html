@@ -369,11 +369,11 @@ filterEnd.setHours(23, 59, 59, 999); // End of the day
           method: 'POST', // Use POST for upsert
           headers: { 
             'Content-Type': 'application/json',
-            apikey: API_KEY,
+            apikey: API_KEY, // Ensure apikey is included
             Authorization: `Bearer ${API_KEY}`,
             Prefer: 'resolution=merge-duplicates,return=representation', // Enable upsert and return updated record
-            name: name, // Include name in headers
-            id: existingEntry?.id // Include id in headers
+            'request.headers.name': name, // Include name in headers
+            'request.headers.id': existingEntry?.id // Include id in headers
           },
           body: JSON.stringify({ ...payload, id: existingEntry?.id }) // Include the ID for updating
         });
