@@ -365,14 +365,14 @@ filterEnd.setHours(23, 59, 59, 999); // End of the day
         const payload = { name };
         slots.forEach(slot => payload[slot] = formData.get(slot) === 'true');
         console.log('Submitting payload:', payload);
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/availability`, {
+        const res = await fetch('/api/submit', {
           method: existingEntry ? 'PATCH' : 'POST', // Use PATCH for updates, POST for new entries
           headers: { 
             'Content-Type': 'application/json',
             apikey: API_KEY, // Include API key
             Authorization: `Bearer ${API_KEY}`, // Include Bearer token
-            'request.headers.name': name, // Pass name in headers
-            'request.headers.id': existingEntry?.id || '' // Pass id in headers if updating
+            name: name, // Pass name in headers
+            id: existingEntry?.id || '' // Pass id in headers if updating
           },
           body: JSON.stringify(payload) // Send the payload
         });
